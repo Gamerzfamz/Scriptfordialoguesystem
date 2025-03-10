@@ -1,0 +1,229 @@
+local npc = game.Workspace:WaitForChild("NPC")
+local gui = script.Parent.Frame
+local npcMessage = script.Parent.Frame:WaitForChild("NpcMessage")
+local closeButton = gui:WaitForChild("Closebutton")
+local UserInputService = game:GetService("UserInputService")
+local buttons = {
+    script.Parent.Frame:WaitForChild("Option1"),
+    script.Parent.Frame:WaitForChild("Option2"),
+    script.Parent.Frame:WaitForChild("Option3")
+}
+
+local dialogues = {
+    ["Start"] = {
+        npcResponse = "Greetings, traveler. Your presence in this quiet village is a rare sight. What brings you here?",
+        playerOptions = {
+            {text = "I'm seeking someone skilled in the art of scripting. Perhaps you know of someone?", nextDialog = "Scripting Inquiry"},
+            {text = "I’m just passing through. The talents of this village piqued my curiosity.", nextDialog = "Curious Traveler"},
+            {text = "I’ve come in search of wisdom. I’ve heard this village is home to a sage.", nextDialog = "Seeking Wisdom"}
+        }
+    },
+    ["Scripting Inquiry"] = {
+        npcResponse = "Ah, you seek a master in the arcane craft of scripting. You must meet Shadow. Few can rival their expertise.",
+        playerOptions = {
+            {text = "What makes Shadow stand out from the rest?", nextDialog = "Shadow Expertise"},
+            {text = "I’ve heard of Shadow. Can you tell me more?", nextDialog = "Shadow Background"},
+            {text = "Where can I find Shadow?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Expertise"] = {
+        npcResponse = "Shadow's mastery is unmatched. It’s not just about skill – it’s their ability to adapt to any challenge and deliver perfection.",
+        playerOptions = {
+            {text = "Tell me about the kinds of projects Shadow excels at.", nextDialog = "Shadow Projects"},
+            {text = "How does Shadow handle compensation for their work?", nextDialog = "Shadow Payment"},
+            {text = "What role does Shadow play in the wider community?", nextDialog = "Shadow Community"}
+        }
+    },
+    ["Shadow Background"] = {
+        npcResponse = "Ah yes, Shadow’s reputation precedes them. He's worked with some of the most prestigious developers across the lands. Always dependable.",
+        playerOptions = {
+            {text = "What kinds of projects has Shadow contributed to?", nextDialog = "Shadow Projects"},
+            {text = "What’s Shadow's payment system like?", nextDialog = "Shadow Payment"},
+            {text = "How does Shadow help guide the next generation of talent?", nextDialog = "Shadow Community"}
+        }
+    },
+    ["Shadow Contact"] = {
+        npcResponse = "You can reach Shadow on Twitter @RealGamerzfamz, or through email at RealGamerzfamz@outlook.com. He's also active on Discord under 'stormchaserxyz'.",
+        playerOptions = {
+            {text = "What projects has Shadow been a part of?", nextDialog = "Shadow Projects"},
+            {text = "How does Shadow like to handle compensation?", nextDialog = "Shadow Payment"},
+            {text = "Can you tell me about Shadow's role in the community?", nextDialog = "Shadow Community"}
+        }
+    },
+    ["Curious Traveler"] = {
+        npcResponse = "Ah, a traveler in search of knowledge, I see. Let me tell you of Shadow, a true artist in the world of scripting. He's a legend here.",
+        playerOptions = {
+            {text = "What sets Shadow apart from other script developers?", nextDialog = "Shadow Expertise"},
+            {text = "I’d love to learn more about their journey. Can you share their story?", nextDialog = "Shadow Background"},
+            {text = "Where can I meet Shadow? I must speak with him directly.", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Seeking Wisdom"] = {
+        npcResponse = "Ah, a quest for wisdom, I admire that. You are fortunate, for Shadow is a fountain of knowledge. Many come seeking their guidance.",
+        playerOptions = {
+            {text = "What kind of knowledge does Shadow possess?", nextDialog = "Shadow Expertise"},
+            {text = "How did Shadow come to be so wise?", nextDialog = "Shadow Background"},
+            {text = "How do I make contact with Shadow for counsel?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Projects"] = {
+        npcResponse = "Shadow has lent their expertise to countless projects. From creating intricate game mechanics to developing entire virtual worlds. Their touch is on nearly every major development in this region.",
+        playerOptions = {
+            {text = "What specific projects have Shadow worked on?", nextDialog = "Shadow Project Details"},
+            {text = "How does Shadow handle payment for such high-end work?", nextDialog = "Shadow Payment"},
+            {text = "How can I reach Shadow for further inquiries?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Project Details"] = {
+        npcResponse = "Shadow has worked on everything from game mechanics to custom server scripts. One notable project was 'Eternal Horizon', where he coded the AI for the entire world, making it feel alive.",
+        playerOptions = {
+            {text = "What other projects has Shadow worked on?", nextDialog = "Shadow Projects"},
+            {text = "How does Shadow prefer to be compensated for their time?", nextDialog = "Shadow Payment"},
+            {text = "Can I directly contact Shadow about my project?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Payment"] = {
+        npcResponse = "Shadow’s compensation methods are as flexible as their talents. He accepts traditional payments like PayPal, as well as more creative forms, like a percentage of project earnings or Robux.",
+        playerOptions = {
+            {text = "Does Shadow ever work on a share-based payment system?", nextDialog = "Shadow Share Payment"},
+            {text = "How does Shadow ensure fair payment for their work?", nextDialog = "Shadow Fair Payment"},
+            {text = "How can I reach out to Shadow for business inquiries?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Share Payment"] = {
+        npcResponse = "Yes, Shadow is known for working on the share-based model. He evaluate the potential of a project and if he believe in it, he's willing to take a risk and work for a percentage of the earnings.",
+        playerOptions = {
+            {text = "How does Shadow assess the potential of a project?", nextDialog = "Shadow Evaluation Process"},
+            {text = "What’s Shadow’s role in the community with respect to projects?", nextDialog = "Shadow Community"},
+            {text = "Can I contact Shadow for a consultation?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Fair Payment"] = {
+        npcResponse = "Shadow is a firm believer in fairness. If a project succeeds, so does Shadow. If it fails, the loss is shared. He believes in the potential of each venture.",
+        playerOptions = {
+            {text = "How can I ensure a fair deal with Shadow?", nextDialog = "Shadow Fair Deal"},
+            {text = "What other roles does Shadow have in the community?", nextDialog = "Shadow Community"},
+            {text = "How do I contact Shadow for a business proposal?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Evaluation Process"] = {
+        npcResponse = "Shadow has a sharp eye for potential. He looks at the team behind a project, the originality of the idea, and the overall vision. If he see something he believes in, he's in.",
+        playerOptions = {
+            {text = "What’s Shadow’s role in nurturing new talent?", nextDialog = "Shadow Community"},
+            {text = "How can I contact Shadow for a project proposal?", nextDialog = "Shadow Contact"},
+            {text = "Does Shadow only work on big projects?", nextDialog = "Shadow Scope"}
+        }
+    },
+    ["Shadow Fair Deal"] = {
+        npcResponse = "A fair deal with Shadow means open communication and mutual respect. You both stand to gain from the project’s success. Shadow ensures it’s always clear.",
+        playerOptions = {
+            {text = "How can I ensure a smooth collaboration with Shadow?", nextDialog = "Shadow Collaboration"},
+            {text = "How does Shadow help guide emerging talent?", nextDialog = "Shadow Community"},
+            {text = "Can I reach out to Shadow for collaboration?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Collaboration"] = {
+        npcResponse = "Shadow values collaboration. He often works alongside others, ensuring everyone benefits. If you can prove your dedication and skills, Shadow will open doors for you.",
+        playerOptions = {
+            {text = "How can I prove my worth to Shadow?", nextDialog = "Shadow Proving Grounds"},
+            {text = "What does Shadow look for in collaborators?", nextDialog = "Shadow Collaboration Traits"},
+            {text = "How can I contact Shadow to pitch an idea?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Shadow Community"] = {
+        npcResponse = "Shadow is a pillar of the community. He's founded Gamerz Studios and co-own SAS Playhouse. He'll help guide talent and bring people together for the greater good.",
+        playerOptions = {
+            {text = "What’s Shadow’s legacy in the community?", nextDialog = "Shadow Legacy"},
+            {text = "How do I get involved with the community?", nextDialog = "Community Involvement"},
+            {text = "Goodbye", nextDialog = "Goodbye"}
+        }
+    },
+    ["Shadow Legacy"] = {
+        npcResponse = "Shadow’s legacy is one of mentorship and innovation. He's helped countless developers find their path and established communities where creativity can thrive.",
+        playerOptions = {
+            {text = "What’s Shadow’s involvement with SAS Playhouse?", nextDialog = "SAS Playhouse Role"},
+            {text = "How can I make an impact in the community?", nextDialog = "Community Impact"},
+            {text = "How do I contact Shadow to discuss mentorship?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["SAS Playhouse Role"] = {
+        npcResponse = "Shadow’s co-ownership of SAS Playhouse means he's involved in everything. He's not just a figurehead; He's actively shaping the future of development and nurturing new talent.",
+        playerOptions = {
+            {text = "How can I get involved with SAS Playhouse?", nextDialog = "Getting Involved"},
+            {text = "What kind of projects does SAS Playhouse support?", nextDialog = "SAS Playhouse Projects"},
+            {text = "How do I contact Shadow for mentorship?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Community Involvement"] = {
+        npcResponse = "You can start by getting involved with local events, offering your skills, and showing dedication. Shadow values those who put the community first.",
+        playerOptions = {
+            {text = "What kind of events should I look for?", nextDialog = "Local Events"},
+            {text = "How can I offer my skills to the community?", nextDialog = "Offering Skills"},
+            {text = "How can I contact Shadow for a partnership?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Local Events"] = {
+        npcResponse = "Look for workshops, hackathons, or local development meetings. These events will give you a chance to learn and meet like-minded individuals.",
+        playerOptions = {
+            {text = "Are there any upcoming events?", nextDialog = "Upcoming Events"},
+            {text = "How do I start my own event?", nextDialog = "Starting Events"},
+            {text = "How can I contact Shadow for advice?", nextDialog = "Shadow Contact"}
+        }
+    },
+    ["Goodbye"] = {
+        npcResponse = "Farewell, traveler. May your journey be filled with adventure and wisdom.",
+        playerOptions = {
+            {text = "Goodbye.", nextDialog = "Goodbye"}
+        }
+    }
+}
+
+local connections = {}
+
+local function updateDialog(dialogKey)
+    local dialog = dialogues[dialogKey]
+    if dialog then
+        npcMessage.Text = dialog.npcResponse
+        for i, option in ipairs(dialog.playerOptions) do
+            if buttons[i] then
+                buttons[i].Text = option.text
+                buttons[i].Visible = true
+                if connections[i] then
+                    connections[i]:Disconnect()
+                end
+                connections[i] = buttons[i].MouseButton1Click:Connect(function()
+                    updateDialog(option.nextDialog)
+                end)
+            end
+        end
+        for i = #dialog.playerOptions + 1, 3 do
+            if buttons[i] then
+                buttons[i].Visible = false
+            end
+        end
+    end
+end
+
+updateDialog("Start")
+
+local function isPlayerNearNPC(player)
+    local distance = (player.Character.HumanoidRootPart.Position - npc.PrimaryPart.Position).Magnitude
+    return distance <= 10
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.E then
+        local player = game.Players.LocalPlayer
+        if isPlayerNearNPC(player) then
+            gui.Visible = true
+            updateDialog("Start")
+        end
+    end
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+    gui.Visible = false
+end)
+
+gui.Visible = false
